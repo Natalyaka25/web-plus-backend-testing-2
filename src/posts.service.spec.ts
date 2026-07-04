@@ -15,18 +15,43 @@ describe('PostsService', () => {
       {text: 'Post 4'},
     ];
 
+    const expectedPosts = posts.map((post, index) => ({
+      id: (index + 1).toString(),
+      ...post,
+    }));
+
     beforeEach(() => {
       posts.forEach((post) => postsService.create(post));
     });
 
     it('should return all posts if called without options', () => {
-      // реализуйте тест-кейс
+      expect(postsService.findMany()).toEqual(expectedPosts);
     });
 
     it('should return correct posts for skip and limit options', () => {
-      // реализуйте тест-кейс
+      expect(postsService.findMany({ skip: 1, limit: 2 })).toEqual(
+        expectedPosts.slice(1, 3),
+      );
     });
 
-    // реализуйте недостающие тест-кейсы
+    it('should skip posts when only skip option is provided', () => {
+      expect(postsService.findMany({ skip: 2 })).toEqual(
+        expectedPosts.slice(2),
+      );
+    });
+
+    it('should limit posts when only limit option is provided', () => {
+      expect(postsService.findMany({ limit: 2 })).toEqual(
+        expectedPosts.slice(0, 2),
+      );
+    });
+
+    it('should return empty array when skip exceeds posts count', () => {
+      expect(postsService.findMany({ skip: 10 })).toEqual([]);
+    });
+
+    it('should return empty array when limit is 0', () => {
+      expect(postsService.findMany({ limit: 0 })).toEqual([]);
+    });
   });
 });
